@@ -12,8 +12,8 @@ export function createServerAction<Return, Args extends unknown[] = []>(
 			if (error instanceof ServerActionError)
 				return {
 					success: false,
-					error: error.message,
-					data: error.data,
+					message: error.message,
+					errors: error.errors as Partial<Record<keyof Return, string[]>>,
 					status: error.status
 				}
 			throw error

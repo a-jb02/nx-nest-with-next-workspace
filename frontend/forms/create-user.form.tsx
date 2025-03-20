@@ -1,5 +1,7 @@
 'use client';
 
+import React from 'react';
+
 import {
   Form,
   FormControl,
@@ -12,14 +14,13 @@ import {
 import { Button } from '@lk/components/ui/button';
 import { useForm, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateUserSchema } from '@lk/schemas';
-import React from 'react';
-import { z } from 'zod';
+import { CreateUserDto, CreateUserSchema, CreateUserErrors } from '@lk/schemas';
 import { Input } from '@lk/components/ui/input';
 import { createUserServerAction } from '../actions/create-user.action';
+import { SomethingWentWrongResponse } from '../libs/client/errors';
 
 export const CreateUserForm = () => {
-  const form = useForm<z.infer<typeof CreateUserSchema>>({
+  const form = useForm<CreateUserDto>({
     resolver: zodResolver(CreateUserSchema),
     defaultValues: {
       firstName: '',
@@ -35,25 +36,24 @@ export const CreateUserForm = () => {
 
   const [success, setSuccess] = React.useState(false);
 
-  const onSubmit = async (data: z.infer<typeof CreateUserSchema>) => {
-    const response = await createUserServerAction(data);
-    if (!response?.success) {
-      console.log('response', response);
+  const onSubmit = async (data: CreateUserDto) => {
+    const response = await createUserServerAction(data).catch((error) =>
+      // override error
+      SomethingWentWrongResponse({ ...error }),
+    );
 
-      if (response.data) {
-        (
-          response.data as { path: string[]; type: string; message: string }[]
-        ).forEach(({ path, type, message }) => {
-          if (path.length > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            form.setError(path[0] as any, { type, message });
-          }
+    if (!response.success) {
+      // pass errors to form context
+      if (response.errors) {
+        const errors: CreateUserErrors = response.errors;
+        Object.entries(errors).forEach(([key, messages]) => {
+          form.setError(key as keyof CreateUserDto, {
+            message: messages.join(', '),
+          });
         });
       }
-
-      return form.setError('root', {
-        message: response.error?.toString() || 'Something went wrong',
-      });
+      // set root error message
+      return form.setError('root', { message: response.message });
     }
     setSuccess(true);
   };
@@ -67,9 +67,9 @@ export const CreateUserForm = () => {
   if (success) {
     return (
       <div className="text-sm text-success flex flex-col justify-center w-full gap-2">
-        {'Пользователь успешно создан'}
+        {'User created successfully'}
         <Button onClick={() => handleReload()} className="w-full">
-          {'Создать еще одного пользователя'}
+          {'Create another user'}
         </Button>
       </div>
     );
@@ -101,11 +101,11 @@ export const CreateUserForm = () => {
               <FormLabel>Email</FormLabel>
 
               <FormControl>
-                <Input {...field} placeholder="Укажите email" type="text" />
+                <Input {...field} placeholder="Enter email" type="text" />
               </FormControl>
               <FormDescription>
-                При вводе домена в зонах .com (схема) и .org (controller) должен
-                сработать запрет
+                When entering a domain in the .com (schema) and .org
+                (controller) zones, a prohibition must be triggered
               </FormDescription>
               <FormMessage className="text-xs">
                 {errors?.email?.message}
@@ -118,13 +118,13 @@ export const CreateUserForm = () => {
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Фамилия</FormLabel>
+              <FormLabel>Last name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Укажите фамилию" type="text" />
+                <Input {...field} placeholder="Enter last name" type="text" />
               </FormControl>
               <FormDescription>
-                На клиенте и на севрере одинаковая валидация - должно быть не
-                менее 2 символов
+                On the client and server, the same validation - must be at least
+                2 characters long менее 2 символов
               </FormDescription>
               <FormMessage className="text-xs">
                 {errors?.lastName?.message}
@@ -137,13 +137,14 @@ export const CreateUserForm = () => {
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Имя</FormLabel>
+              <FormLabel>First name</FormLabel>
               <FormControl>
-                <Input {...field} placeholder="Укажите имя" type="text" />
+                <Input {...field} placeholder="Enter first name" type="text" />
               </FormControl>
               <FormDescription>
-                На клиенте и на севрере разная валидация - на клиенте должно
-                быть не менее 1 символа, на севрере - не менее 2 символов
+                On the client and server, the validation is different - on the
+                client it must be at least 1 character long, on the server it
+                must be at least 2 characters long
               </FormDescription>
               <FormMessage className="text-xs">
                 {errors?.firstName?.message}
@@ -154,10 +155,10 @@ export const CreateUserForm = () => {
         <div className="text-sm text-destructive">{errors?.root?.message}</div>
         <div className="flex items-center justify-end gap-2">
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {'Создать пользователя'}
+            {'Create user'}
           </Button>
           <Button type="button" onClick={() => form.reset()} className="w-full">
-            {'Сбросить'}
+            {'Reset'}
           </Button>
         </div>
       </form>

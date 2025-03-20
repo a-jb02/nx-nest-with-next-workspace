@@ -4,30 +4,30 @@ import { ServerActionsErrorMessages } from './constants'
 type ServerActionErrorOptions = {
 	message: string
 	status: HttpStatusCode
-	data?: unknown
+	errors?: unknown
 }
 export class ServerActionError extends Error {
 	public status: HttpStatusCode | undefined = undefined
-	public data?: unknown
+	public errors?: unknown
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_SOMETHING_WENT_WRONG,
-		data,
+		errors,
 		status
 	}: ServerActionErrorOptions) {
 		super(message, { /*cause: data*/ })
 		this.status = status
 		this.name = 'ServerActionError'
-		this.data = data
+		this.errors = errors
 	}
 }
 
 export class ServerActionUnknownError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_SOMETHING_WENT_WRONG,
-		data,
+		errors,
 		status = HttpStatusCode.InternalServerError
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionUnknownError'
 	}
 }
@@ -35,10 +35,10 @@ export class ServerActionUnknownError extends ServerActionError {
 export class ServerActionBadRequestError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_BAD_REQUEST,
-		data,
+		errors,
 		status = HttpStatusCode.BadRequest
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionBadRequestError'
 	}
 }
@@ -46,10 +46,10 @@ export class ServerActionBadRequestError extends ServerActionError {
 export class ServerActionFetchError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_FAILED_TO_FETCH_DATA,
-		data,
+		errors,
 		status = HttpStatusCode.BadRequest
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionFetchError'
 	}
 }
@@ -57,10 +57,10 @@ export class ServerActionFetchError extends ServerActionError {
 export class ServerActionForbiddenError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_FORBIDDEN,
-		data,
+		errors,
 		status = HttpStatusCode.Forbidden
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionForbiddenError'
 	}
 }
@@ -68,10 +68,10 @@ export class ServerActionForbiddenError extends ServerActionError {
 export class ServerActionNotFoundError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_NOT_FOUND,
-		data,
+		errors,
 		status = HttpStatusCode.BadRequest
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionNotFoundError'
 	}
 }
@@ -79,10 +79,10 @@ export class ServerActionNotFoundError extends ServerActionError {
 export class ServerActionTooManyRequestsError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_TOO_MANY_REQUESTS,
-		data,
+		errors,
 		status = HttpStatusCode.TooManyRequests
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionTooManyRequestsError'
 	}
 }
@@ -90,10 +90,10 @@ export class ServerActionTooManyRequestsError extends ServerActionError {
 export class ServerActionUnauthorizedError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_UNAUTHORIZED,
-		data,
+		errors,
 		status = HttpStatusCode.Unauthorized
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionUnauthorizedError'
 	}
 }
@@ -101,10 +101,10 @@ export class ServerActionUnauthorizedError extends ServerActionError {
 export class ServerActionConflictError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_CONFLICT,
-		data,
+		errors,
 		status = HttpStatusCode.Conflict
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionConflictError'
 	}
 }
@@ -112,10 +112,10 @@ export class ServerActionConflictError extends ServerActionError {
 export class ServerActionNotImplementedError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERRROR_NOT_IMPLEMENTED,
-		data,
+		errors,
 		status = HttpStatusCode.NotImplemented
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionNotImplementedError'
 	}
 }
@@ -123,10 +123,10 @@ export class ServerActionNotImplementedError extends ServerActionError {
 export class ServerActionSyntaxError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERROR_SYNTAX_ERROR,
-		data,
+		errors,
 		status = HttpStatusCode.UnprocessableEntity
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionSyntaxError'
 	}
 }
@@ -134,10 +134,10 @@ export class ServerActionSyntaxError extends ServerActionError {
 export class ServerActionValidationError extends ServerActionError {
 	constructor({
 		message = ServerActionsErrorMessages.ERROR_UNPROCESSABLE_ENTITY,
-		data,
+		errors,
 		status = HttpStatusCode.UnprocessableEntity
 	}: Partial<ServerActionErrorOptions> = {}) {
-		super({ message, data, status })
+		super({ message, errors, status })
 		this.name = 'ServerActionValidationError'
 	}
 }

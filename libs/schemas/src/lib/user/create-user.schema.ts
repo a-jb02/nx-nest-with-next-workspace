@@ -12,3 +12,4 @@ export const CreateUserSchema = z.object({
 });
 
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
+export type CreateUserErrors = Partial<Record<keyof CreateUserDto, string[]>>;

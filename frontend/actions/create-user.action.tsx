@@ -1,15 +1,14 @@
 'use server';
 
-import { CreateUserSchema } from '@lk/schemas';
+import { CreateUserDto } from '@lk/schemas';
 import {
   createServerAction,
   ServerActionBadRequestError,
 } from '../libs/server';
-import { z } from 'zod';
 
 export const createUserServerAction = createServerAction<
-  unknown,
-  [z.infer<typeof CreateUserSchema>]
+  CreateUserDto,
+  [CreateUserDto]
 >(async (data) => {
   // call directly to backend API
   const response = await fetch(`${process.env.API_URL}/api/v1/hello`, {
@@ -24,7 +23,7 @@ export const createUserServerAction = createServerAction<
     const error = await response.json();
     throw new ServerActionBadRequestError({
       message: error.message,
-      data: error.errors,
+      errors: error.errors,
       status: response.status,
     });
   }
